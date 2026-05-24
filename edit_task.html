@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow — Edit Task</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy-deep:   #0a1e35;
+      --navy-mid:    #0e3460;
+      --teal-accent: #1a7fbe;
+      --sky-bright:  #2aa8e0;
+      --white:       #ffffff;
+      --off-white:   #f7f9fc;
+      --text-dark:   #0f1923;
+      --text-muted:  #8a96a3;
+      --border:      #e2e8ef;
+      --error:       #e04545;
+      --input-bg:    #f4f7fa;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--off-white);
+      color: var(--text-dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 550px;
+      background: var(--white);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(10, 30, 53, 0.05);
+      animation: fadeIn 0.5s ease both;
+    }
+
+    .header { margin-bottom: 32px; text-align: center; }
+    .header h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--navy-deep);
+      letter-spacing: -.5px;
+      margin-bottom: 6px;
+    }
+    .header p { font-size: 14px; color: var(--text-muted); }
+
+    .field { margin-bottom: 22px; }
+    .field label {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 700;
+      font-family: 'Sora', sans-serif;
+      color: var(--navy-mid);
+      margin-bottom: 8px;
+    }
+
+    .input-wrap { position: relative; }
+    .input-wrap input, .input-wrap textarea, .input-wrap select {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--input-bg);
+      border: 1.5px solid transparent;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+    }
+    .input-wrap textarea { resize: vertical; min-height: 100px; }
+    
+    .input-wrap input:focus, .input-wrap textarea:focus, .input-wrap select:focus {
+      background: var(--white);
+      border-color: var(--teal-accent);
+      box-shadow: 0 0 0 3px rgba(26,127,190,.12);
+    }
+
+    /* Validation styles */
+    .input-wrap input.invalid, .input-wrap textarea.invalid, .input-wrap select.invalid {
+      border-color: var(--error);
+      background-color: #fff5f5;
+    }
+    .error-text {
+      color: var(--error);
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .actions { display: flex; gap: 12px; margin-top: 32px; }
+    
+    .btn {
+      flex: 1; padding: 14px; border-radius: 12px;
+      font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: all 0.2s ease; text-align: center;
+    }
+    .btn-cancel { background: transparent; border: 1.5px solid var(--border); color: var(--text-muted); }
+    .btn-cancel:hover { background: var(--input-bg); color: var(--text-dark); }
+    
+    .btn-submit {
+      background: linear-gradient(135deg, var(--navy-mid) 0%, var(--teal-accent) 100%);
+      border: none; color: var(--white);
+      box-shadow: 0 6px 20px rgba(14,52,96,.25);
+    }
+    .btn-submit:hover { box-shadow: 0 8px 25px rgba(14,52,96,.35); transform: translateY(-1px); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .row { grid-template-columns: 1fr; gap: 0; }
+      .container { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h2>Edit Task</h2>
+    <p>Modify the details of your project task</p>
+  </div>
+
+  <form id="editTaskForm" novalidate>
+    
+    <!-- Title -->
+    <div class="field">
+      <label for="taskTitle">Task Title</label>
+      <div class="input-wrap">
+        <input type="text" id="taskTitle" value="Faux data: Fix Navbar Layout" required />
+        <div class="error-text" id="titleError">Task title cannot be empty.</div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="field">
+      <label for="taskDesc">Description</label>
+      <div class="input-wrap">
+        <textarea id="taskDesc" required>Adjust padding and alignment issues on responsive viewports.</textarea>
+        <div class="error-text" id="descError">Please provide a description.</div>
+      </div>
+    </div>
+
+    <!-- Category -->
+    <div class="field">
+      <label for="category">Category</label>
+      <div class="input-wrap">
+        <select id="category" required>
+          <option value="frontend" selected>Frontend</option>
+          <option value="backend">Backend</option>
+          <option value="database">Database</option>
+          <option value="design">Design</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Row for Due Date & Priority -->
+    <div class="row">
+      <!-- Date -->
+      <div class="field">
+        <label for="dueDate">Due Date</label>
+        <div class="input-wrap">
+          <input type="date" id="dueDate" value="2026-05-20" required />
+          <div class="error-text" id="dateError">Select a valid deadline.</div>
+        </div>
+      </div>
+
+      <!-- Priority -->
+      <div class="field">
+        <label for="priority" >Priority</label>
+        <div class="input-wrap">
+          <select id="priority" required>
+            <option value="low">🟢 Low</option>
+            <option value="medium" selected>🟡 Medium</option>
+            <option value="high">🔴 High</option>
+          </select>
+          <div class="error-text" id="priorityError">Select a priority level.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="field">
+      <label for="status">Status</label>
+      <div class="input-wrap">
+        <select id="status" required>
+          <option value="todo">To Do</option>
+          <option value="inprogress" selected>In Progress</option>
+          <option value="done">Done</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button type="button" class="btn btn-cancel" onclick="window.history.back()">Cancel</button>
+      <button type="submit" class="btn btn-submit">Save Changes</button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  document.getElementById('editTaskForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const title = document.getElementById('taskTitle');
+    const desc = document.getElementById('taskDesc');
+    const date = document.getElementById('dueDate');
+    const priority = document.getElementById('priority');
+
+    let isValid = true;
+
+    function validate(input, errorId) {
+      const errorMsg = document.getElementById(errorId);
+      if (input.value.trim() === "") {
+        input.classList.add('invalid');
+        errorMsg.style.display = 'block';
+        isValid = false;
+      } else {
+        input.classList.remove('invalid');
+        errorMsg.style.display = 'none';
+      }
+    }
+
+    validate(title, 'titleError');
+    validate(desc, 'descError');
+    validate(date, 'dateError');
+    validate(priority, 'priorityError');
+
+    if (isValid) {
+      alert("Changes saved successfully on the frontend!");
+      // Prochaine étape : Ton collègue backend connectera son fichier update_task.php ici
+    }
+  });
+</script>
+
+</body>
+</html>

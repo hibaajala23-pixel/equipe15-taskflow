@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow — Create Task</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy-deep:   #0a1e35;
+      --navy-mid:    #0e3460;
+      --teal-accent: #1a7fbe;
+      --sky-bright:  #2aa8e0;
+      --white:       #ffffff;
+      --off-white:   #f7f9fc;
+      --text-dark:   #0f1923;
+      --text-muted:  #8a96a3;
+      --border:      #e2e8ef;
+      --error:       #e04545;
+      --input-bg:    #f4f7fa;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--off-white);
+      color: var(--text-dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 550px;
+      background: var(--white);
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(10, 30, 53, 0.05);
+      animation: fadeIn 0.5s ease both;
+    }
+
+    .header {
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .header h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--navy-deep);
+      letter-spacing: -.5px;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .field {
+      margin-bottom: 22px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 700;
+      font-family: 'Sora', sans-serif;
+      color: var(--navy-mid);
+      margin-bottom: 8px;
+    }
+
+    .input-wrap input, 
+    .input-wrap textarea, 
+    .input-wrap select {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--input-bg);
+      border: 1.5px solid transparent;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14.5px;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+    }
+
+    .input-wrap textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .input-wrap input:focus, 
+    .input-wrap textarea:focus, 
+    .input-wrap select:focus {
+      background: var(--white);
+      border-color: var(--teal-accent);
+      box-shadow: 0 0 0 3px rgba(26,127,190,.12);
+    }
+
+    .input-wrap input.invalid, 
+    .input-wrap textarea.invalid, 
+    .input-wrap select.invalid {
+      border-color: var(--error);
+      background-color: #fff5f5;
+    }
+
+    .error-text {
+      color: var(--error);
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+      font-weight: 500;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .btn-cancel {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+      text-decoration: none;
+      line-height: 1.5;
+    }
+
+    .btn-cancel:hover {
+      background: var(--input-bg);
+      color: var(--text-dark);
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--navy-mid) 0%, var(--teal-accent) 100%);
+      border: none;
+      color: var(--white);
+      box-shadow: 0 6px 20px rgba(14,52,96,.25);
+    }
+
+    .btn-submit:hover {
+      box-shadow: 0 8px 25px rgba(14,52,96,.35);
+      transform: translateY(-1px);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .row { grid-template-columns: 1fr; gap: 0; }
+      .container { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h2>Save Task Details</h2>
+    <p>Manage and organize your custom workflow agenda</p>
+  </div>
+
+  <form id="taskForm" novalidate>
+    
+    <!-- Task Title -->
+    <div class="field">
+      <label for="taskTitle">Task Title</label>
+      <div class="input-wrap">
+        <input type="text" id="taskTitle" placeholder="e.g., Prepare university presentation" required />
+        <div class="error-text" id="titleError">Please enter a task title.</div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="field">
+      <label for="taskDesc">Description</label>
+      <div class="input-wrap">
+        <textarea id="taskDesc" placeholder="Describe the goals or notes for this task..." required></textarea>
+        <div class="error-text" id="descError">Please provide a brief description.</div>
+      </div>
+    </div>
+
+    <!-- Category Selector Dropdown -->
+    <div class="field">
+      <label for="category">Category</label>
+      <div class="input-wrap">
+        <select id="category" required>
+          <option value="" disabled selected>Select a category</option>
+          <option value="work">📝 Work</option>
+          <option value="personal">🏠 Personal</option>
+          <option value="goals">🎯 Goals</option>
+          <option value="shopping">🛒 Shopping</option>
+        </select>
+        <div class="error-text" id="categoryError">Please select a category.</div>
+      </div>
+    </div>
+
+    <!-- Row for Due Date & Priority -->
+    <div class="row">
+      <!-- Due Date -->
+      <div class="field">
+        <label for="dueDate">Due Date</label>
+        <div class="input-wrap">
+          <input type="date" id="dueDate" required />
+          <div class="error-text" id="dateError">Please select a deadline.</div>
+        </div>
+      </div>
+
+      <!-- Priority Selector Dropdown -->
+      <div class="field">
+        <label for="priority">Priority</label>
+        <div class="input-wrap">
+          <select id="priority" required>
+            <option value="" disabled selected>Select priority</option>
+            <option value="low">🟢 Low</option>
+            <option value="medium">🟡 Medium</option>
+            <option value="high">🔴 High</option>
+          </select>
+          <div class="error-text" id="priorityError">Please choose a priority level.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reminder Date/Time Field -->
+    <div class="field">
+      <label for="reminderDate">Set System Reminder Notification (Optional)</label>
+      <div class="input-wrap">
+        <input type="datetime-local" id="reminderDate" />
+        <div class="error-text" id="reminderError">Please select a future timestamp.</div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <a href="dashboard.php" class="btn btn-cancel">Cancel</a>
+      <button type="submit" class="btn btn-submit">Save Task</button>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  document.getElementById('taskForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const title = document.getElementById('taskTitle');
+    const desc = document.getElementById('taskDesc');
+    const category = document.getElementById('category');
+    const date = document.getElementById('dueDate');
+    const priority = document.getElementById('priority');
+
+    let isValid = true;
+
+    function validateField(inputElement, errorElementId) {
+      const errorElement = document.getElementById(errorElementId);
+      if (inputElement.value === null || inputElement.value.trim() === "") {
+        inputElement.classList.add('invalid');
+        errorElement.style.display = 'block';
+        isValid = false;
+      } else {
+        inputElement.classList.remove('invalid');
+        errorElement.style.display = 'none';
+      }
+    }
+
+    validateField(title, 'titleError');
+    validateField(desc, 'descError');
+    validateField(category, 'categoryError');
+    validateField(date, 'dateError');
+    validateField(priority, 'priorityError');
+
+    if (isValid) {
+      alert("Success! Task structure validated perfectly on the frontend.");
+      window.location.href = "dashboard.php";
+    }
+  });
+</script>
+</body>
+</html>

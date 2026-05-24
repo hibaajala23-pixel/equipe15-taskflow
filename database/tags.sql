@@ -1,0 +1,7 @@
+CREATE TABLE tags (
+
+    id INT PRIMARY KEY AUTO_INCREMENT,
+
+    nom_tag VARCHAR(100)
+    UNIQUE NOT NULL
+);
