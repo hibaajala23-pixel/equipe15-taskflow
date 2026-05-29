@@ -7,12 +7,11 @@ VALUES
 
 
 
-INSERT INTO categories
-(nom_categorie)
-VALUES
-('Travail'),
-('Etudes'),
-('Personnel');
+INSERT INTO categories (id, nom_categorie) VALUES
+(1, 'Work'),
+(2, 'Personal'),
+(3, 'Goals'),
+(4, 'Shopping');
 
 
 

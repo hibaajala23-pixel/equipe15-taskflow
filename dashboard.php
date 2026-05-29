@@ -304,29 +304,65 @@ body{
 
                 <div class="task-meta">
 
-                    <span class="badge-cat">
-                        <?= htmlspecialchars($task['categorie_nom']) ?>
-                    </span>
+<span class="badge-cat">
+
+<?php
+    switch($task['categorie_id']){
+
+        case 1:
+            echo '📝 Work';
+            break;
+
+        case 2:
+            echo '🏠 Personal';
+            break;
+
+        case 3:
+            echo '🎯 Goals';
+            break;
+
+        case 4:
+            echo '🛒 Shopping';
+            break;
+
+        default:
+            echo '📁 Unknown';
+    }
+?>
+
+</span>
 
                     <span class="date">
                         📅 <?= htmlspecialchars($task['date_limite']) ?>
                     </span>
 
-                    <span class="
-                    <?php
-                        if($task['priorite'] == 'Haute'){
-                            echo 'priority-high';
-                        }
-                        elseif($task['priorite'] == 'Moyenne'){
-                            echo 'priority-medium';
-                        }
-                        else{
-                            echo 'priority-low';
-                        }
-                    ?>
-                    ">
-                        <?= htmlspecialchars($task['priorite']) ?>
-                    </span>
+<span class="
+<?php
+    if($task['priorite'] == 'Haute'){
+        echo 'priority-high';
+    }
+    elseif($task['priorite'] == 'Moyenne'){
+        echo 'priority-medium';
+    }
+    else{
+        echo 'priority-low';
+    }
+?>
+">
+
+<?php
+    if($task['priorite'] == 'Haute'){
+        echo '🔴';
+    }
+    elseif($task['priorite'] == 'Moyenne'){
+        echo '🟡';
+    }
+    else{
+        echo '🟢';
+    }
+?>
+
+</span>
 
                 </div>
 
