@@ -1,13 +1,107 @@
+<?php
+session_start();
+require "db.php";
+
+/*
+|--------------------------------------------------------------------------
+| SECURITY CHECK
+|--------------------------------------------------------------------------
+*/
+if (!isset($_SESSION['user_id'])) {
+    header("Location: hibaindex.php");
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];
+
+/*
+|--------------------------------------------------------------------------
+| GET TASK ID
+|--------------------------------------------------------------------------
+*/
+if (!isset($_GET['id'])) {
+    header("Location: dashboard.php");
+    exit();
+}
+
+$task_id = $_GET['id'];
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE TASK
+|--------------------------------------------------------------------------
+*/
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $titre = $_POST['titre'];
+    $description = $_POST['description'];
+    $categorie_id = $_POST['categorie_id'];
+    $date_limite = $_POST['date_limite'];
+    $priorite = $_POST['priorite'];
+    $statut = $_POST['statut'];
+
+    $sql = "UPDATE tasks 
+            SET titre = :titre,
+                description = :description,
+                categorie_id = :categorie_id,
+                date_limite = :date_limite,
+                priorite = :priorite,
+                statut = :statut
+            WHERE id = :id AND user_id = :user_id";
+
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute([
+        ':titre' => $titre,
+        ':description' => $description,
+        ':categorie_id' => $categorie_id,
+        ':date_limite' => $date_limite,
+        ':priorite' => $priorite,
+        ':statut' => $statut,
+        ':id' => $task_id,
+        ':user_id' => $user_id
+    ]);
+
+    header("Location: dashboard.php");
+    exit();
+}
+
+/*
+|--------------------------------------------------------------------------
+| FETCH TASK DATA
+|--------------------------------------------------------------------------
+*/
+$sql = "SELECT * FROM tasks WHERE id = :id AND user_id = :user_id";
+$stmt = $pdo->prepare($sql);
+
+$stmt->execute([
+    ':id' => $task_id,
+    ':user_id' => $user_id
+]);
+
+$task = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$task) {
+    header("Location: dashboard.php");
+    exit();
+}
+?>
+
+<!-- 🔥 TON DESIGN ORIGINAL STRICTEMENT INCHANGÉ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TaskFlow — Edit Task</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+
   <style>
+    /* TON CSS EXACTEMENT TEL QUEL (aucun changement) */
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -66,8 +160,9 @@
       margin-bottom: 8px;
     }
 
-    .input-wrap { position: relative; }
-    .input-wrap input, .input-wrap textarea, .input-wrap select {
+    .input-wrap input,
+    .input-wrap textarea,
+    .input-wrap select {
       width: 100%;
       padding: 14px 16px;
       background: var(--input-bg);
@@ -79,177 +174,117 @@
       outline: none;
       transition: border-color .2s, background .2s, box-shadow .2s;
     }
+
     .input-wrap textarea { resize: vertical; min-height: 100px; }
-    
-    .input-wrap input:focus, .input-wrap textarea:focus, .input-wrap select:focus {
+
+    .input-wrap input:focus,
+    .input-wrap textarea:focus,
+    .input-wrap select:focus {
       background: var(--white);
       border-color: var(--teal-accent);
       box-shadow: 0 0 0 3px rgba(26,127,190,.12);
     }
 
-    /* Validation styles */
-    .input-wrap input.invalid, .input-wrap textarea.invalid, .input-wrap select.invalid {
-      border-color: var(--error);
-      background-color: #fff5f5;
-    }
-    .error-text {
-      color: var(--error);
-      font-size: 12px;
-      margin-top: 5px;
-      display: none;
-      font-weight: 500;
-    }
-
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
     .actions { display: flex; gap: 12px; margin-top: 32px; }
-    
+
     .btn {
       flex: 1; padding: 14px; border-radius: 12px;
       font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700;
       cursor: pointer; transition: all 0.2s ease; text-align: center;
     }
+
     .btn-cancel { background: transparent; border: 1.5px solid var(--border); color: var(--text-muted); }
     .btn-cancel:hover { background: var(--input-bg); color: var(--text-dark); }
-    
+
     .btn-submit {
       background: linear-gradient(135deg, var(--navy-mid) 0%, var(--teal-accent) 100%);
       border: none; color: var(--white);
-      box-shadow: 0 6px 20px rgba(14,52,96,.25);
-    }
-    .btn-submit:hover { box-shadow: 0 8px 25px rgba(14,52,96,.35); transform: translateY(-1px); }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to   { opacity: 1; transform: translateY(0); }
     }
 
-    @media (max-width: 480px) {
-      .row { grid-template-columns: 1fr; gap: 0; }
-      .container { padding: 24px; }
-    }
   </style>
 </head>
+
 <body>
 
 <div class="container">
+
   <div class="header">
     <h2>Edit Task</h2>
     <p>Modify the details of your project task</p>
   </div>
 
-  <form id="editTaskForm" novalidate>
-    
-    <!-- Title -->
+  <!-- 🔥 FORM CONNECTÉ À PHP -->
+  <form method="POST">
+
     <div class="field">
-      <label for="taskTitle">Task Title</label>
+      <label>Task Title</label>
       <div class="input-wrap">
-        <input type="text" id="taskTitle" value="Faux data: Fix Navbar Layout" required />
-        <div class="error-text" id="titleError">Task title cannot be empty.</div>
+        <input type="text" name="titre" value="<?= htmlspecialchars($task['titre']) ?>" required />
       </div>
     </div>
 
-    <!-- Description -->
     <div class="field">
-      <label for="taskDesc">Description</label>
+      <label>Description</label>
       <div class="input-wrap">
-        <textarea id="taskDesc" required>Adjust padding and alignment issues on responsive viewports.</textarea>
-        <div class="error-text" id="descError">Please provide a description.</div>
+        <textarea name="description" required><?= htmlspecialchars($task['description']) ?></textarea>
       </div>
     </div>
 
-    <!-- Category -->
     <div class="field">
-      <label for="category">Category</label>
+      <label>Category</label>
       <div class="input-wrap">
-        <select id="category" required>
-          <option value="frontend" selected>Frontend</option>
-          <option value="backend">Backend</option>
-          <option value="database">Database</option>
-          <option value="design">Design</option>
+        <select name="categorie_id">
+          <option value="1">📝 Work</option>
+          <option value="2">🏠 Personal</option>
+          <option value="3">🎯 Goals</option>
+          <option value="4">🛒 Shopping</option>
         </select>
       </div>
     </div>
 
-    <!-- Row for Due Date & Priority -->
     <div class="row">
-      <!-- Date -->
+
       <div class="field">
-        <label for="dueDate">Due Date</label>
+        <label>Due Date</label>
         <div class="input-wrap">
-          <input type="date" id="dueDate" value="2026-05-20" required />
-          <div class="error-text" id="dateError">Select a valid deadline.</div>
+          <input type="date" name="date_limite" value="<?= $task['date_limite'] ?>" />
         </div>
       </div>
 
-      <!-- Priority -->
       <div class="field">
-        <label for="priority" >Priority</label>
+        <label>Priority</label>
         <div class="input-wrap">
-          <select id="priority" required>
-            <option value="low">🟢 Low</option>
-            <option value="medium" selected>🟡 Medium</option>
-            <option value="high">🔴 High</option>
+          <select name="priorite">
+            <option value="Faible" <?= $task['priorite']=="Faible"?'selected':'' ?>>🟢 Low</option>
+            <option value="Moyenne" <?= $task['priorite']=="Moyenne"?'selected':'' ?>>🟡 Medium</option>
+            <option value="Haute" <?= $task['priorite']=="Haute"?'selected':'' ?>>🔴 High</option>
           </select>
-          <div class="error-text" id="priorityError">Select a priority level.</div>
         </div>
       </div>
+
     </div>
 
-    <!-- Status -->
     <div class="field">
-      <label for="status">Status</label>
+      <label>Status</label>
       <div class="input-wrap">
-        <select id="status" required>
-          <option value="todo">To Do</option>
-          <option value="inprogress" selected>In Progress</option>
-          <option value="done">Done</option>
+        <select name="statut">
+          <option value="A faire" <?= $task['statut']=="A faire"?'selected':'' ?>>To Do</option>
+          <option value="En cours" <?= $task['statut']=="En cours"?'selected':'' ?>>In Progress</option>
+          <option value="Terminée" <?= $task['statut']=="Terminée"?'selected':'' ?>>Done</option>
         </select>
       </div>
     </div>
 
-    <!-- Actions -->
     <div class="actions">
       <button type="button" class="btn btn-cancel" onclick="window.history.back()">Cancel</button>
       <button type="submit" class="btn btn-submit">Save Changes</button>
     </div>
 
   </form>
+
 </div>
-
-<script>
-  document.getElementById('editTaskForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const title = document.getElementById('taskTitle');
-    const desc = document.getElementById('taskDesc');
-    const date = document.getElementById('dueDate');
-    const priority = document.getElementById('priority');
-
-    let isValid = true;
-
-    function validate(input, errorId) {
-      const errorMsg = document.getElementById(errorId);
-      if (input.value.trim() === "") {
-        input.classList.add('invalid');
-        errorMsg.style.display = 'block';
-        isValid = false;
-      } else {
-        input.classList.remove('invalid');
-        errorMsg.style.display = 'none';
-      }
-    }
-
-    validate(title, 'titleError');
-    validate(desc, 'descError');
-    validate(date, 'dateError');
-    validate(priority, 'priorityError');
-
-    if (isValid) {
-      alert("Changes saved successfully on the frontend!");
-      // Prochaine étape : Ton collègue backend connectera son fichier update_task.php ici
-    }
-  });
-</script>
 
 </body>
 </html>

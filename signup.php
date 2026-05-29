@@ -28,8 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt->execute([$name, $email, $password])) {
 
             // CREATE SESSION
-            $_SESSION['user_name'] = $name;
-            $_SESSION['user_email'] = $email;
+           $_SESSION['user_id'] = $pdo->lastInsertId();
+
+           $_SESSION['user_name'] = $name;
+
+           $_SESSION['user_email'] = $email;
 
             // REDIRECT TO DASHBOARD
             header("Location: dashboard.php");
