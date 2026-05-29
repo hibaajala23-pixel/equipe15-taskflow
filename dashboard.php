@@ -242,7 +242,26 @@ body{
     color:var(--text-muted);
     border:1px dashed var(--border);
 }
+/* TASK COMPLETED */
+.task-card.completed{
+    opacity:0.7;
+    background:#fff0f0;
+    border-color:#f5b5b5;
+}
 
+.task-card.completed .task-title{
+    text-decoration: line-through;
+    color:var(--error);
+}
+.task-card.completed .date{
+    color: var(--error);
+  }
+.checkbox-complete{
+    width:18px;
+    height:18px;
+    accent-color:var(--error);
+    cursor:pointer;
+}
 </style>
 </head>
 
@@ -294,10 +313,11 @@ body{
 
         <?php foreach($tasks as $task): ?>
 
-        <div class="task-card">
+       <div class="task-card <?= $task['is_done'] == 1 ? 'completed' : '' ?>">
 
-            <div>
+    <input type="checkbox" class="checkbox-complete" onchange="toggleTask(this, <?= $task['id'] ?>)" <?= $task['is_done'] == 1 ? 'checked' : '' ?>>
 
+            <div style="display:flex; gap:4px; align-items:flex-start;">  
                 <h3 class="task-title">
                     <?= htmlspecialchars($task['titre']) ?>
                 </h3>
@@ -432,8 +452,41 @@ function filtrerTaches(){
     });
 
 }
+function toggleTask(checkbox){
 
+    const card = checkbox.closest('.task-card');
+
+    if(checkbox.checked){
+        card.classList.add('completed');
+    } else {
+        card.classList.remove('completed');
+    }
+
+}
 </script>
+<script>
+function toggleTask(checkbox, taskId){
 
+    const isDone = checkbox.checked ? 1 : 0;
+
+    const card = checkbox.closest('.task-card');
+
+    // effet visuel
+    if(isDone){
+        card.classList.add('completed');
+    } else {
+        card.classList.remove('completed');
+    }
+
+    // envoi vers PHP
+    fetch('update_task_status.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `id=${taskId}&is_done=${isDone}`
+    });
+}
+</script>
 </body>
 </html>

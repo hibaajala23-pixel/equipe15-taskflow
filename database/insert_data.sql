@@ -6,6 +6,7 @@ VALUES
 ('Sara','sara@gmail.com', '123456');
 
 
+ALTER TABLE tasks ADD is_done TINYINT(1) DEFAULT 0;
 
 INSERT INTO categories (id, nom_categorie) VALUES
 (1, 'Work'),
