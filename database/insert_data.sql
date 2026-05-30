@@ -13,6 +13,8 @@ ALTER TABLE tasks ADD is_done TINYINT(1) DEFAULT 0;
 ALTER TABLE tasks
 ADD reminder_datetime DATETIME NULL;
 
+ALTER TABLE tasks DROP COLUMN statut;
+
 INSERT INTO categories (id, nom_categorie) VALUES
 (1, 'Work'),
 (2, 'Personal'),

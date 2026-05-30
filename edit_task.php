@@ -38,29 +38,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $categorie_id = $_POST['categorie_id'];
     $date_limite = $_POST['date_limite'];
     $priorite = $_POST['priorite'];
-    $statut = $_POST['statut'];
+    
 
-    $sql = "UPDATE tasks 
-            SET titre = :titre,
-                description = :description,
-                categorie_id = :categorie_id,
-                date_limite = :date_limite,
-                priorite = :priorite,
-                statut = :statut
-            WHERE id = :id AND user_id = :user_id";
+   $sql = "UPDATE tasks 
+        SET titre = :titre,
+            description = :description,
+            categorie_id = :categorie_id,
+            date_limite = :date_limite,
+            priorite = :priorite
+        WHERE id = :id AND user_id = :user_id";
 
     $stmt = $pdo->prepare($sql);
 
-    $stmt->execute([
-        ':titre' => $titre,
-        ':description' => $description,
-        ':categorie_id' => $categorie_id,
-        ':date_limite' => $date_limite,
-        ':priorite' => $priorite,
-        ':statut' => $statut,
-        ':id' => $task_id,
-        ':user_id' => $user_id
-    ]);
+$stmt->execute([
+    ':titre' => $titre,
+    ':description' => $description,
+    ':categorie_id' => $categorie_id,
+    ':date_limite' => $date_limite,
+    ':priorite' => $priorite,
+    ':id' => $task_id,
+    ':user_id' => $user_id
+]);
 
     header("Location: dashboard.php");
     exit();
@@ -266,16 +264,7 @@ if (!$task) {
 
     </div>
 
-    <div class="field">
-      <label>Status</label>
-      <div class="input-wrap">
-        <select name="statut">
-          <option value="A faire" <?= $task['statut']=="A faire"?'selected':'' ?>>To Do</option>
-          <option value="En cours" <?= $task['statut']=="En cours"?'selected':'' ?>>In Progress</option>
-          <option value="Terminée" <?= $task['statut']=="Terminée"?'selected':'' ?>>Done</option>
-        </select>
-      </div>
-    </div>
+  
 
     <div class="actions">
       <button type="button" class="btn btn-cancel" onclick="window.history.back()">Cancel</button>
