@@ -88,6 +88,10 @@ http://localhost/taskflow
 
 https://taskflow-app.infinityfree.me
 
+# compte de test 
+ email : "test2026@gmail.com"
+ password :"12341
+
 ## Structure du projet
 
 taskflow/
