@@ -36,7 +36,7 @@ HAYAT ZAK : Product owner
 
 ### 1. Cloner le projet
 
-git clone https://github.com/hibaajala23-pixel/taskflow.git
+git clone https://github.com/hibaajala23-pixel/equipe15-taskflow.git
 
 ### 2. Importer la base de données
 
